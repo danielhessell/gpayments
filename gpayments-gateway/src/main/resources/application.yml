@@ -1,0 +1,34 @@
+server:
+  port: ${HTTP_PORT:8080}
+
+spring:
+  application:
+    name: gpayments-gateway
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:gateway}?sslmode=${DB_SSL_MODE:disable}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKER:localhost:9092}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+app:
+  kafka:
+    producer-topic: ${KAFKA_PRODUCER_TOPIC:pending_transactions}
+    consumer-topic: ${KAFKA_CONSUMER_TOPIC:transaction_results}
+    consumer-group-id: ${KAFKA_CONSUMER_GROUP_ID:gateway-group}
+
+logging:
+  level:
+    com.gpayments.gateway: INFO
