@@ -3,6 +3,7 @@ package com.gpayments.gateway.service
 import com.gpayments.gateway.domain.Account
 import com.gpayments.gateway.domain.exception.AccountNotFoundException
 import com.gpayments.gateway.domain.exception.DuplicatedApiKeyException
+import com.gpayments.gateway.domain.exception.DuplicatedEmailException
 import com.gpayments.gateway.dto.AccountOutput
 import com.gpayments.gateway.dto.CreateAccountInput
 import com.gpayments.gateway.dto.toOutput
@@ -15,6 +16,9 @@ import java.math.BigDecimal
 class AccountService(private val accountRepository: AccountRepository) {
 
     fun createAccount(input: CreateAccountInput): AccountOutput {
+        if (accountRepository.findByEmail(input.email) != null) {
+            throw DuplicatedEmailException()
+        }
         val account = Account.newAccount(input.name, input.email)
         if (accountRepository.findByApiKey(account.apiKey) != null) {
             throw DuplicatedApiKeyException()

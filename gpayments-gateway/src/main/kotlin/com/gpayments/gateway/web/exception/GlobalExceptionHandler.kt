@@ -3,6 +3,7 @@ package com.gpayments.gateway.web.exception
 import com.gpayments.gateway.domain.exception.AccountNotFoundException
 import com.gpayments.gateway.domain.exception.ApiKeyRequiredException
 import com.gpayments.gateway.domain.exception.DuplicatedApiKeyException
+import com.gpayments.gateway.domain.exception.DuplicatedEmailException
 import com.gpayments.gateway.domain.exception.GatewayException
 import com.gpayments.gateway.domain.exception.InvalidAmountException
 import com.gpayments.gateway.domain.exception.InvalidStatusException
@@ -24,8 +25,8 @@ class GlobalExceptionHandler {
     fun handleUnauthorized(ex: GatewayException): ResponseEntity<ErrorResponse> =
         ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(ex.message ?: "unauthorized"))
 
-    @ExceptionHandler(DuplicatedApiKeyException::class)
-    fun handleConflict(ex: DuplicatedApiKeyException): ResponseEntity<ErrorResponse> =
+    @ExceptionHandler(DuplicatedApiKeyException::class, DuplicatedEmailException::class)
+    fun handleConflict(ex: GatewayException): ResponseEntity<ErrorResponse> =
         ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse(ex.message ?: "conflict"))
 
     @ExceptionHandler(InvoiceNotFoundException::class)

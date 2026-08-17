@@ -78,7 +78,7 @@ Header `X-API-KEY` obrigatório. Response `200`: array de `InvoiceOutput` (`[]` 
 | Exceção | HTTP |
 |---|---|
 | `AccountNotFoundException`, `ApiKeyRequiredException` | 401 |
-| `DuplicatedApiKeyException` | 409 |
+| `DuplicatedApiKeyException`, `DuplicatedEmailException` | 409 |
 | `InvoiceNotFoundException` | 404 |
 | `UnauthorizedAccessException` | 403 |
 | `InvalidAmountException`, `InvalidStatusException`, validação (`@Valid`) | 400 |
@@ -180,7 +180,11 @@ O método precisa estar dentro de `@Transactional` — é a transação do banco
 
 **Trade-off consciente**: lock pessimista serializa updates concorrentes na mesma conta (a segunda transação espera, não falha) — correto para este caso porque contenção é rara (updates de balance por conta são esporádicos) e a alternativa (lock otimista com retry) adicionaria complexidade sem necessidade real aqui.
 
-## 9. Estrutura de pacotes
+## 9. Idempotência
+
+`POST /accounts` rejeita email duplicado com `409` (`DuplicatedEmailException`) em vez do `500` genérico que a constraint `UNIQUE` do banco causava antes. Levantamento completo de quais pontos da aplicação são idempotentes por construção (consumer Kafka), o que foi corrigido, e o que fica como TODO (idempotência de retry em `POST /invoice`, producer Kafka) em [`idempotencia.md`](IDEMPOTENCIA.md).
+
+## 10. Estrutura de pacotes
 
 ```
 com.gpayments.gateway

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param
 
 interface AccountRepository : JpaRepository<Account, String> {
     fun findByApiKey(apiKey: String): Account?
+    fun findByEmail(email: String): Account?
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select a from Account a where a.id = :id")
