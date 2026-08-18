@@ -13,8 +13,8 @@ import java.time.Instant
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 
-private val PENDING_THRESHOLD: BigDecimal = BigDecimal(10000)
-private const val APPROVAL_RATE = 0.7
+private val PENDING_THRESHOLD: BigDecimal = BigDecimal(10000) //  VALOR SUSPEITO
+private const val APPROVAL_RATE = 0.7 // TAXA DE APROVAÇAO
 
 @Entity
 @Table(name = "invoices")
@@ -46,6 +46,7 @@ class Invoice(
 ) {
     fun process() {
         if (amount > PENDING_THRESHOLD) return
+        // SIMULANDO TAXA DE APROVAÇAO
         status = if (ThreadLocalRandom.current().nextDouble() <= APPROVAL_RATE) {
             Status.APPROVED
         } else {
