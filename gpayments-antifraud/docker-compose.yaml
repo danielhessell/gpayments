@@ -1,0 +1,43 @@
+services:
+  antifraud:
+    build: .
+    ports:
+      - "3002:3000"
+    environment:
+      DATABASE_URL: jdbc:postgresql://antifraud-db:5433/antifraud
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    depends_on:
+      antifraud-db:
+        condition: service_healthy
+    networks:
+      - gpayments-gateway_default
+    restart: unless-stopped
+
+  antifraud-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: antifraud
+      PGPORT: "5433"
+    ports:
+      - "5434:5433"
+    volumes:
+      - antifraud_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -p 5433"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gpayments-gateway_default
+    restart: unless-stopped
+
+networks:
+  gpayments-gateway_default:
+    external: true
+
+volumes:
+  antifraud_postgres_data:

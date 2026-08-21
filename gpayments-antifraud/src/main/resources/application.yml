@@ -1,0 +1,39 @@
+server:
+  port: ${PORT:3000}
+
+spring:
+  application:
+    name: gpayments-antifraud
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5433/mydb}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:29092}
+    consumer:
+      group-id: antifraud-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+antifraud:
+  suspicious-variation-percentage: ${SUSPICIOUS_VARIATION_PERCENTAGE:50}
+  invoices-history-count: ${INVOICES_HISTORY_COUNT:5}
+  suspicious-invoices-count: ${SUSPICIOUS_INVOICES_COUNT:3}
+  suspicious-timeframe-hours: ${SUSPICIOUS_TIMEFRAME_HOURS:24}
+
+app:
+  kafka:
+    # must match gpayments-gateway's app.kafka.producer-topic / consumer-topic
+    pending-topic: ${KAFKA_PENDING_TOPIC:pending_transactions}
+    result-topic: ${KAFKA_RESULT_TOPIC:transaction_results}
